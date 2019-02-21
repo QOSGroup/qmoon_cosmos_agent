@@ -1,40 +1,30 @@
 // Copyright 2018 The QOS Authors
 
-package qmoon_cosmos_agent
+package main
 
 import (
-	"fmt"
-
-	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	"github.com/cosmos/cosmos-sdk/x/slashing"
-	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/tendermint/go-amino"
-	"github.com/tendermint/tendermint/crypto/encoding/amino"
+	"github.com/QOSGroup/qmoon_cosmos_agent/cmd"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-var cdc = MakeCOSMOSCodec()
-
-// cosmos
-func MakeCOSMOSCodec() *amino.Codec {
-	var cdc = amino.NewCodec()
-	bank.RegisterCodec(cdc)
-	staking.RegisterCodec(cdc)
-	distribution.RegisterCodec(cdc)
-	slashing.RegisterCodec(cdc)
-	gov.RegisterCodec(cdc)
-	auth.RegisterCodec(cdc)
-	types.RegisterCodec(cdc)
-	cryptoAmino.RegisterAmino(cdc)
-	return cdc
+// RootCmd moon主命令
+var rootCmd = &cobra.Command{
+	Use:   "qmoon_cosmos_agent",
+	Short: "qmoon_cosmos_agent cli",
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
+		if err := viper.BindPFlags(cmd.Flags()); err != nil {
+			return err
+		}
+		return nil
+	},
 }
 
-func ParseTx(t []byte) error {
-	var tx auth.StdTx
-	err := cdc.UnmarshalBinaryLengthPrefixed(t, &tx)
-	fmt.Printf("%+v", tx.Msgs)
-	return err
+func main() {
+	rootCmd.AddCommand(cmd.AgentCmd)
+	rootCmd.AddCommand(cmd.ServerCmd)
+
+	if err := rootCmd.Execute(); err != nil {
+		panic(err)
+	}
 }

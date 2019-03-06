@@ -5,6 +5,7 @@ package cosmos_agent
 import (
 	"encoding/base64"
 	"encoding/json"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -43,6 +44,7 @@ type Tx struct {
 type ResultTx struct {
 	Status int    `json:"status"`
 	Txs    []Tx   `json:"txs"`
+	Fee    string `json:"fee"`
 	IsOK   bool   `json:"isOk"`
 	Err    string `json:"err"`
 }
@@ -87,6 +89,12 @@ func ParseTxs(txs []string) ([]ResultTx, error) {
 				Data: d,
 			})
 		}
+
+		var fees []string
+		for _, v := range tx.Fee.Amount {
+			fees = append(fees, v.String())
+		}
+		rt.Fee = strings.Join(fees, ",")
 		result = append(result, rt)
 	}
 
@@ -105,5 +113,10 @@ func ParseTx(t []byte) (*ResultTx, error) {
 			Data: d,
 		})
 	}
+	var fees []string
+	for _, v := range tx.Fee.Amount {
+		fees = append(fees, v.String())
+	}
+	result.Fee = strings.Join(fees, ",")
 	return &result, err
 }

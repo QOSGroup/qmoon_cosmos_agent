@@ -3,7 +3,7 @@ module github.com/QOSGroup/qmoon_cosmos_agent
 require (
 	cloud.google.com/go v0.36.0 // indirect
 	github.com/QOSGroup/qmoon v0.0.4-0.20190219035013-b884a07e9709 // indirect
-	github.com/cosmos/cosmos-sdk v0.32.0
+	github.com/cosmos/cosmos-sdk v0.33.0
 	github.com/gin-gonic/gin v1.3.0
 	github.com/go-xorm/xorm v0.7.1
 	github.com/json-iterator/go v1.1.5

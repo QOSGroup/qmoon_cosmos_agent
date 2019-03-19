@@ -12,3 +12,4 @@
 *.out
 .idea
 qmoon_cosmos_agent
+Makefile

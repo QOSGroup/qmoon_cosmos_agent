@@ -15,7 +15,7 @@ import (
 )
 
 func TestQueryTx(t *testing.T) {
-	remote := "http://192.168.1.23:26657"
+	remote := "http://192.168.1.184:26657"
 	tmcli := client.NewHTTP(remote, "/websocket")
 	t.Run("block", func(t *testing.T) {
 		height := int64(58578)

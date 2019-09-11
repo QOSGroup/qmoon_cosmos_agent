@@ -7,11 +7,11 @@ require (
 	github.com/gin-gonic/gin v1.3.0
 	github.com/go-xorm/xorm v0.7.1
 	github.com/json-iterator/go v1.1.5
-	github.com/kisielk/gotool v1.0.0 // indirect
-	github.com/spf13/cobra v0.0.3
-	github.com/spf13/viper v1.3.1
+	github.com/spf13/cobra v0.0.5
+	github.com/spf13/viper v1.3.2
 	github.com/stretchr/testify v1.3.0
 	github.com/tendermint/go-amino v0.15.0
 	github.com/tendermint/tendermint v0.32.2
-	golang.org/x/crypto v0.0.0-20190219172222-a4c6cb3142f2 // indirect
 )
+
+replace git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999

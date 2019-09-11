@@ -4,14 +4,15 @@ package cosmos_agent
 
 import (
 	"encoding/json"
-	"log"
-	"testing"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmbech32 "github.com/tendermint/tendermint/libs/bech32"
 	"github.com/tendermint/tendermint/rpc/client"
+	"log"
+	"testing"
 )
 
 func TestQueryTx(t *testing.T) {
@@ -54,69 +55,31 @@ func TestDecodbeh32(t *testing.T) {
 
 }
 
-type StakingValidator struct {
-	Commission struct {
-		MaxChangeRate string `json:"max_change_rate"`
-		MaxRate       string `json:"max_rate"`
-		Rate          string `json:"rate"`
-		UpdateTime    string `json:"update_time"`
-	} `json:"commission"`
-	ConsensusPubkey string `json:"consensus_pubkey"`
-	DelegatorShares string `json:"delegator_shares"`
-	Description     struct {
-		Details  string `json:"details"`
-		Identity string `json:"identity"`
-		Moniker  string `json:"moniker"`
-		Website  string `json:"website"`
-	} `json:"description"`
-	Jailed            bool   `json:"jailed"`
-	MinSelfDelegation string `json:"min_self_delegation"`
-	OperatorAddress   string `json:"operator_address"`
-	Status            int    `json:"status"`
-	Tokens            string `json:"tokens"`
-	UnbondingHeight   string `json:"unbonding_height"`
-	UnbondingTime     string `json:"unbonding_time"`
-}
-
 func TestValidator(t *testing.T) {
 	remote := "http://192.168.1.184:26657"
 	tmcli := client.NewHTTP(remote, "/websocket")
 	endpoint := "/store/staking/subspace"
 	key := []byte{0x21}
 	res1, err := tmcli.ABCIQuery(endpoint, key)
-	assert.Nil(t, err)
-	var sv []StakingValidator
-	if res1.Response.Code == 0 {
-		json.Unmarshal(res1.Response.Value, &sv)
-	}
-
-	t.Logf("name:%+v", sv.Description.Moniker)
-	//cli := lib.TendermintClient("http://192.168.1.180:26657")
-	//endpoint := "custom/staking/validator"
-	//s, err := hex.DecodeString(strings.ToLower("1FBF89B0DC10144877BF8C93D7FBAF00E10FFC24"))
-	//assert.Nil(t, err)
-	//
-	//address, err := bech32.ConvertAndEncode("cosmosvaloper", s)
-	//assert.Nil(t, err)
-	//t.Logf("address1:%s", address)
-	//
-	//address = lib.PubkeyToBech32Address("cosmosvalconspub", "tendermint/PubKeyEd25519", "9tK9IT+FPdf2qm+5c2qaxi10sWP+3erWTKgftn2PaQM=")
-	//t.Logf("address2:%s", address)
-	//
-	//p := QueryValidatorParams{ValidatorAddr: address}
-	//d, err := lib.Cdc.MarshalJSON(p)
-	//t.Logf("d:%s", string(d))
-	//assert.Nil(t, err)
-	//res, err := cli.ABCIQuery(endpoint, d)
-	//assert.Nil(t, err)
-	//t.Logf("res:%+v", res)
-	//
-	//res1, err := cli.ABCIQuery("custom/staking/validators", nil)
-	//t.Logf("code:%+v", res1.Response.Code)
+	t.Log(res1.Response.Value)
 	//t.Logf("res1.Response.Value:%+v", string(res1.Response.Value))
-	//if res1.Response.Code == 0 {
-	//	var sv []StakingValidator
-	//	json.Unmarshal(res1.Response.Value, &sv)
-	//	//t.Logf("sv:%+v", sv)
-	//}
+	assert.Nil(t, err)
+	if res1.Response.Code == 0 {
+		var resRaw []sdk.KVPair
+		cdc.MustUnmarshalBinaryLengthPrefixed(res1.Response.Value, &resRaw)
+
+		var validators types.Validators
+		for _, kv := range resRaw {
+			validators = append(validators, types.MustUnmarshalValidator(cdc, kv.Value))
+		}
+		for _, s := range validators {
+			t.Logf("name:%+v", s.Description.Moniker)
+		}
+		//bytes, err := cdc.MarshalJSON(validators)
+		//if err != nil {
+		//	t.Log(err.Error())
+		//	return
+		//}
+		//t.Log(string(bytes))
+	}
 }

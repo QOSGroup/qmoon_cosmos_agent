@@ -20,7 +20,7 @@ import (
 	"github.com/tendermint/tendermint/rpc/client"
 )
 
-var cdc = MakeCOSMOSCodec()
+var Cdc = MakeCOSMOSCodec()
 
 // cosmos
 func MakeCOSMOSCodec() *amino.Codec {
@@ -76,7 +76,7 @@ func ParseTxs(txs []string) ([]ResultTx, error) {
 			continue
 		}
 		var tx auth.StdTx
-		if err := cdc.UnmarshalBinaryLengthPrefixed(txd, &tx); err != nil {
+		if err := Cdc.UnmarshalBinaryLengthPrefixed(txd, &tx); err != nil {
 			result = append(result, ResultTx{Status: 500, Err: err.Error()})
 			continue
 		}
@@ -105,7 +105,7 @@ func ParseTx(t []byte) (*ResultTx, error) {
 	var result ResultTx
 
 	var tx auth.StdTx
-	err := cdc.UnmarshalBinaryLengthPrefixed(t, &tx)
+	err := Cdc.UnmarshalBinaryLengthPrefixed(t, &tx)
 	for _, v := range tx.Msgs {
 		d, _ := jsoniter.Marshal(v)
 		result.Txs = append(result.Txs, Tx{

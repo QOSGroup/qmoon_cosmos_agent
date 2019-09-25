@@ -66,11 +66,11 @@ func TestValidator(t *testing.T) {
 	assert.Nil(t, err)
 	if res1.Response.Code == 0 {
 		var resRaw []sdk.KVPair
-		cdc.MustUnmarshalBinaryLengthPrefixed(res1.Response.Value, &resRaw)
+		Cdc.MustUnmarshalBinaryLengthPrefixed(res1.Response.Value, &resRaw)
 
 		var validators types.Validators
 		for _, kv := range resRaw {
-			validators = append(validators, types.MustUnmarshalValidator(cdc, kv.Value))
+			validators = append(validators, types.MustUnmarshalValidator(Cdc, kv.Value))
 		}
 		for _, s := range validators {
 			t.Logf("name:%+v", s.Description.Moniker)

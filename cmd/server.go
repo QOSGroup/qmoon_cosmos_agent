@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"encoding/hex"
+	"github.com/QOSGroup/qmoon_cosmos_agent/cosmos_agent/client/stake"
 	"log"
 	"net/http"
 
@@ -70,6 +71,17 @@ func server(cmd *cobra.Command, args []string) error {
 
 		ctx.JSON(http.StatusOK, result)
 	})
-
+	r.GET("/stake/validators", queryValidators)
 	return r.Run(laddr)
+}
+
+func queryValidators(ctx *gin.Context) {
+	remote := ctx.Query("remote")
+	result, err := stake.QueryValidators(remote)
+	log.Printf("res:%+v, err:%+v", result, err)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, result)
 }
